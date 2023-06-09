@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 model = get_yolov5()
 
 app = FastAPI(
-    title="Buwang.in MachineAPI",
+    title="Buwang.inMachineAPI",
     description="""Obtain object value out of image
                     and return image and json result""",
     version="0.0.1",
@@ -50,7 +50,7 @@ def get_health():
 
 
 @app.post("/object-to-json")
-async def detect_food_return_json_result(file: bytes = File(...)):
+async def detect_trash_return_json_result(file: bytes = File(...)):
     input_image = get_image_from_bytes(file)
     results = model(input_image)
     detect_res = results.pandas().xyxy[0].to_json(orient="records")  # JSON img1 predictions
@@ -59,11 +59,11 @@ async def detect_food_return_json_result(file: bytes = File(...)):
 
 
 @app.post("/object-to-img")
-async def detect_food_return_base64_img(file: bytes = File(...)):
+async def detect_trash_return_base64_img(file: bytes = File(...)):
     input_image = get_image_from_bytes(file)
     results = model(input_image)
     results.render()  # updates results.imgs with boxes and labels
     bytes_io = io.BytesIO()
-    img_base64 = Image.fromarray(results.image)  # Use the appropriate attribute here
+    img_base64 = Image.fromarray(results.pred)  # Use the appropriate attribute here
     img_base64.save(bytes_io, format="jpeg")
     return Response(content=bytes_io.getvalue(), media_type="image/jpeg")
