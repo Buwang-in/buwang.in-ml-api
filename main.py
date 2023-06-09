@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 model = get_yolov5()
 
 app = FastAPI(
-    title="Custom YOLOV5 Machine Learning API",
+    title="Buwang.in MachineAPI",
     description="""Obtain object value out of image
                     and return image and json result""",
     version="0.0.1",
