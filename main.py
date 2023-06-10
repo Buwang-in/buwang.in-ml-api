@@ -58,14 +58,17 @@ async def detect_trash_return_json_result(file: bytes = File(...)):
     return {"result": detect_res}
 
 
-@app.post("/detect-object")
-async def detect_object(file: UploadFile = File(...)):
-    image = Image.open(file.file)
-    input_image = get_image_from_bytes(file.file.read())
+@app.post("/object-to-img")
+async def detect_trash_return_base64_img(file: bytes = File(...)):
+    input_image = get_image_from_bytes(file)
+    print("input_image =>", input_image)
     results = model(input_image)
-    detect_res = results.pandas().xyxy[0].to_json(orient="records")  # JSON img1 predictions
-    detect_res = json.loads(detect_res)
-    image_bytes = io.BytesIO()
-    image.save(image_bytes, format="JPEG")
-    image_bytes.seek(0)
-    return Response(content=image_bytes, media_type="image/jpeg", headers={"result": json.dumps(detect_res)})
+    print("results =>", results)
+    a = results.render()  # updates results.imgs with boxes and labels
+    print("a =>", a)
+    for img in a:
+        print('img', img)
+        bytes_io = io.BytesIO()
+        img_base64 = Image.fromarray(img)
+        img_base64.save(bytes_io, format="jpeg")
+    return Response(content=bytes_io.getvalue(), media_type="image/jpeg")
