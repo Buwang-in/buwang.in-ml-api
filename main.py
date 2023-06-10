@@ -50,7 +50,7 @@ def get_health():
 
 
 @app.post("/object-to-json")
-async def detect_trash_return_json_result(file: bytes = File(...)):
+async def detect_food_return_json_result(file: bytes = File(...)):
     input_image = get_image_from_bytes(file)
     results = model(input_image)
     detect_res = results.pandas().xyxy[0].to_json(orient="records")  # JSON img1 predictions
@@ -59,16 +59,35 @@ async def detect_trash_return_json_result(file: bytes = File(...)):
 
 
 @app.post("/object-to-img")
-async def detect_trash_return_base64_img(file: bytes = File(...)):
+async def detect_food_return_base64_img(file: bytes = File(...)):
     input_image = get_image_from_bytes(file)
     print("input_image =>", input_image)
     results = model(input_image)
     print("results =>", results)
     a = results.render()  # updates results.imgs with boxes and labels
     print("a =>", a)
+    
+    object_counts = {}
+    
     for img in a:
         print('img', img)
         bytes_io = io.BytesIO()
         img_base64 = Image.fromarray(img)
         img_base64.save(bytes_io, format="jpeg")
-    return Response(content=bytes_io.getvalue(), media_type="image/jpeg")
+        
+        # Menghitung jumlah objek dan nama objek
+        labels = results.pandas().xyxy[0]['name']
+        for label in labels:
+            if label not in object_counts:
+                object_counts[label] = 1
+            else:
+                object_counts[label] += 1
+    
+    # Mengubah hasil perhitungan menjadi string
+    object_counts_str = ", ".join([f"{label}: {count}" for label, count in object_counts.items()])
+    
+    # Mengembalikan gambar dan hasil perhitungan dalam format JSON
+    return {
+        "image": bytes_io.getvalue(),
+        "object_counts": object_counts_str
+    }
