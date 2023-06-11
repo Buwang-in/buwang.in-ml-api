@@ -78,4 +78,6 @@ async def detect_food_return_base64_img(file: bytes = File(...)):
         bytes_io = io.BytesIO()
         img_base64 = Image.fromarray(img)
         img_base64.save(bytes_io, format="jpeg")
-    return Response(content=bytes_io.getvalue(), media_type="image/jpeg", headers={"X-Label-Counts": json.dumps(label_counts)})
+    #return Response(content=bytes_io.getvalue(), media_type="image/jpeg", headers={"X-Label-Counts": json.dumps(label_counts)})
+    # return image & label_counts
+    return {"image": bytes_io.getvalue(), "label_counts": label_counts}
