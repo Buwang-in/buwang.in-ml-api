@@ -1,4 +1,4 @@
-# ml-cloud-api
+# buwang.in-ml-api
 
 This project is for creating the API for the machine learning model using FAST API and YOLOv5
 
