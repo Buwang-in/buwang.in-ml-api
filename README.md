@@ -2,7 +2,6 @@
 
 This project is for creating the API for the machine learning model using FAST API and YOLOv5
 
-
 ### Getting start for this project
 
 ```
